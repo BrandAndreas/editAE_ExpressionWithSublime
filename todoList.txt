@@ -1,6 +1,0 @@
-1. Test Command Line in AE-Script
-2. Activate expression for selected property
-3. Search with AE-Script for files
-4. Organize folder-structure
-5. Create with AE-Script directorys
-6. Think about "Export expression to Sublime"
