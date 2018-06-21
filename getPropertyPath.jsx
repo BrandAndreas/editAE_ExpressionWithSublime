@@ -1,5 +1,3 @@
-//Copyright: Jakob Wagner and Xavier Gomez (https://forums.creativecow.net/docs/forums/post.php?forumid=227&postid=33493&univpostid=33493&pview=t)
-
 function testButtonClick()
 {
 	var comp = app.project.activeItem;
@@ -9,19 +7,22 @@ function testButtonClick()
 	var property = selectedProperties[0];
 	
 	var propPath = getPropPath(property);
-	var prop = eval("layer.property"+getPropPath(property));
-	alert(propPath);
+	// var prop = eval("layer.property"+getPropPath(property));
+	var compPropPath = "comp(\"" + comp.name + "\").layer(\"" + layer.name + "\")" + propPath.join("")
+	alert(compPropPath);
 }
 
 function getPropPath(prop)
 {
 	var layerRoot = false;
-	var propPath = "";
+	// var propPath = "";
+	var propPath = [];	
 	
-	while(prop.parentProperty)
+	for(var i = 0; prop.parentProperty; i++)
 	{
 		// propPath = "("+prop.propertyIndex+")"+propPath;
-		propPath = "('"+prop.name+"')"+propPath;
+		// propPath = "('"+prop.name+"')"+propPath;
+		propPath[i] = "('"+prop.name+"')";
 		// propPath = "('"+prop.matchName+"')"+propPath;
 		prop = prop.parentProperty;
 	}
