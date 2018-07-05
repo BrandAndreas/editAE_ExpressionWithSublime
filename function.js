@@ -84,6 +84,17 @@ function checkExistingFile(propPath){
 	return searchFile === newFilePath;
 }
 
+function getNewExpression(property){
+	var FilePath = createFilePathForwardslash(property);
+	// alert(FilePath);
+	FilePath = FilePath.replace(/\//g, "\\\\");
+	var expFile = new File(FilePath);
+	expFile.open("r");
+	var exp = expFile.read();	
+	expFile.close();
+	return exp;
+}
+
 function getProjectPath(){
 	var projPath = app.project.file.toString();
 	projPath = doubleBackslash(projPath);
@@ -103,7 +114,8 @@ function createFile(property){
 	var txtFilePath = createFilePathForwardslash(property);
 	var txtFile = new File(txtFilePath);
 	txtFile.open("w");
-	
+	var pathToProperty = getPropPath(property); //=> ('Transformieren')('Ankerpunkt')
+	var fileName = pathToProperty.replace(/[(|"|\.|'|\s)]/g, "") + ".js"; //=> TransformierenAnkerpunkt.js
 	system.callSystem(sublPath + " " + doubleBackslash(txtFile.path) + "\\\\"  + fileName);	
 	txtFile.close();
 	var existingExpression = getExpression(property);
