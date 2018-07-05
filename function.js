@@ -42,11 +42,11 @@ function openSublime(){
 	$.sleep(500); //tell extendscript to sleep 1000 milliseconds
 }
 
-function getExpression(){
-	var comp = activeComp();
-	var selProps = comp.selectedProperties;
-	var prop1 = selProps[0];
-	return prop1.expression.split(/\r\n/);
+function getExpression(property){
+	// var comp = activeComp();
+	// var selProps = comp.selectedProperties;
+	// var prop1 = selProps[0];
+	return property.expression.split(/\r\n/);
 }
 
 function convertExpression(textString){
@@ -66,7 +66,7 @@ function getPropPath(prop)
 		propPath[i] = "('"+prop.name+"')";		
 		prop = prop.parentProperty;
 	}
-	return propPath.reverse();
+	return propPath.reverse().join("");
 }
 
 function createExpressionPath(selProperty)
@@ -77,15 +77,50 @@ function createExpressionPath(selProperty)
 }
 
 function checkExistingFile(propPath){
-	var fileName = propPath.replace(/[(|"|\.|)]/g, "") + ".js";
-	var searchFile = system.callSystem("where /R " + getProjectPath);
-	if ()
+	var fileName = propPath.replace(/[(|"|\.|'\s)]/g, "") + ".js";	
+	var searchFile = system.callSystem("where \/R " + getProjectPath() + " " + fileName).split(/\r\n/)[0];
+	var projPath = app.project.file.toString().replace(/[^\/|.]+\.aep/, "").replace(/\//, "").replace(/(.)/, "$1:").replace(/\//g, "\\");
+	var newFilePath = projPath + fileName;
+	return searchFile === newFilePath;
 }
 
 function getProjectPath(){
-	return app.project.file.,toString();
+	var projPath = app.project.file.toString();
+	projPath = doubleBackslash(projPath);
+	projPath = deleteProjName(projPath);
+	return projPath;
 }
 
 function doubleBackslash(path){
 	return path.replace(/\//, "").replace(/(.)/, "$1:").replace(/\//g, "\\\\");
+}
+
+function deleteProjName(path){
+	return path.replace(/[^\\\\|.]+\.aep/, "");
+}
+
+function createFile(property){
+	var txtFilePath = createFilePathForwardslash(property);
+	var txtFile = new File(txtFilePath);
+	txtFile.open("w");
+	
+	system.callSystem(sublPath + " " + doubleBackslash(txtFile.path) + "\\\\"  + fileName);	
+	txtFile.close();
+	var existingExpression = getExpression(property);
+	exportTextToSublime(existingExpression);
+}
+
+function openFile(property){
+	var txtFilePath = createFilePathForwardslash(property);
+	system.callSystem(sublPath + " " + txtFilePath.replace(/\//g, "\\\\"));
+}
+
+function createFilePathForwardslash(property){ // creates i:/FAZNET/Videoschnitt/.../TransformierenAnkerpunkt.js
+
+	var pathToProperty = getPropPath(property); //=> ('Transformieren')('Ankerpunkt')
+	var fileName = pathToProperty.replace(/[(|"|\.|'|\s)]/g, "") + ".js"; //=> TransformierenAnkerpunkt.js
+	var projPath = app.project.file.toString().replace(/[^\/|.]+\.aep/, ""); //=> /i/FAZNET/Videoschnitt/.../
+	var newFilePath = projPath.replace(/\//, "").replace(/(.)/, "$1:"); //=> i:/FAZNET/Videoschnitt/.../	
+	var txtFilePath = newFilePath + escape(fileName);//=> i:/FAZNET/Videoschnitt/.../TransformierenAnkerpunkt.js
+	return txtFilePath;
 }
