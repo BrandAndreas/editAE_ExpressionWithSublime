@@ -124,3 +124,38 @@ function createFilePathForwardslash(property){ // creates i:/FAZNET/Videoschnitt
 	var txtFilePath = newFilePath + escape(fileName);//=> i:/FAZNET/Videoschnitt/.../TransformierenAnkerpunkt.js
 	return txtFilePath;
 }
+
+
+
+
+// check Sublime path
+
+function getThisPath(){
+	var thisFile = new File($.fileName);  
+	return basePath = thisFile.path;
+}
+
+function checkSublimePath(){
+	var sublExePath = sublPath + ".exe";
+	var searchFile = system.callSystem("where \/R " + sublPath.replace(/subl/, "") + " subl.exe").split(/\r\n/)[0];
+	return searchFile === sublExePath;
+}
+
+function replaceSpecialCharacter(str){
+	objSpecChar = {
+		"Ü" : /%C3%9C/g,
+		"Ä" : /%C3%84/g,
+		"Ö" : /%C3%96/g,
+		"ß" : /%C3%9F/g,
+		"ä" : /%C3%A4/g,
+		"ö" : /%C3%B6/g,
+		"ü" : /%C3%BC/g,
+		"ẞ" : /%E1%BA%9E/g,
+
+
+	}
+	Object.keys(objSpecChar).forEach(function(element){		
+		str = str.replace(objSpecChar[element], element.toString());
+	})
+	return str;
+}
